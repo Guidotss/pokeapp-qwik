@@ -121,16 +121,7 @@ ul {
 
 /* BUTTONS -------------------------------------- */
 a.button,
-button {
-  background: var(--qwik-light-blue);
-  border: none;
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
-  font-size: 0.8rem;
-  padding: 15px 20px;
-  text-align: center;
-}
+
 
 a.button.button-dark,
 button.button-dark {
