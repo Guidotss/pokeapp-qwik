@@ -1,36 +1,34 @@
-import { component$, useComputed$ } from "@builder.io/qwik";
+import { $, component$, useSignal } from "@builder.io/qwik";
 import {
   type DocumentHead,
   routeLoader$,
-  useLocation,
-  Link,
+  useNavigate,
 } from "@builder.io/qwik-city";
 
-
-export const usePokemonList = routeLoader$(
-  async ({ query, redirect, pathname }) => {
-    const offset = query.get("offset") || 0;
-    if (+offset  < 0) {
-      throw redirect(301, pathname);
-    } else {
-      const response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon?limit=10&offset=${offset}`,
-      );
-      const data = await response.json();
-      return data.results;
-    }
-  },
-);
+export const usePokemonList = routeLoader$(async ({ query }) => {
+  const offset = query.get("offset") || 0;
+  if (+offset < 0) throw new Error("Offset can't be less than 0");
+  const response = await fetch(
+    `https://pokeapi.co/api/v2/pokemon?limit=10&offset=${offset}`,
+  );
+  const data = await response.json();
+  return data.results;
+});
 
 export default component$(() => {
   const pokemons = usePokemonList();
-  const location = useLocation();
-  const currentOffset = useComputed$<number>(() => {
-    const offsetString = new URLSearchParams(location.url.search); 
-    return Number(offsetString.get("offset") || 0);
-  });
+  const navigate = useNavigate();
+  const currentOffset = useSignal<number>(0);
 
-  console.log(currentOffset.value);
+  const handleOffsetChange = $((offset: number) => {
+    currentOffset.value += offset;
+    if (currentOffset.value < 0) {
+      currentOffset.value = 0;
+      navigate("/pokemons/list-ssr/");
+      return; 
+    }
+    navigate(`/pokemons/list-ssr?offset=${currentOffset.value}`);
+  });
 
   return (
     <>
@@ -41,18 +39,18 @@ export default component$(() => {
       </div>
 
       <div class="mt-10 ">
-        <Link
-          href={`/pokemons/list-ssr?offset=${currentOffset.value - 10}`}
+        <button
+          onClick$={() => handleOffsetChange(-10)}
           class="btn btn-primary mr-2"
         >
           Anteriores
-        </Link>
-        <Link
-          href={`/pokemons/list-ssr?offset=${currentOffset.value + 10}`}
+        </button>
+        <button
+          onClick$={() => handleOffsetChange(10)}
           class="btn btn-primary mr-2"
         >
           Siguientes
-        </Link>
+        </button>
       </div>
 
       <div class="mt-5 grid grid-cols-6">
