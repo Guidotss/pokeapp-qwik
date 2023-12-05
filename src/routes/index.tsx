@@ -1,8 +1,10 @@
 import { component$, useSignal, $ } from "@builder.io/qwik";
 import type { DocumentHead } from "@builder.io/qwik-city";
+import PokemonImage from "~/components/pokemons/pokemon-image";
 
 export default component$(() => {
   const pokemonId = useSignal<number>(1); // Utilizar el hook useSignal solo para tipos primitivos
+  const isFront = useSignal<boolean>(true);
 
   const nextId = $(() => {
     pokemonId.value = pokemonId.value + 1;
@@ -14,20 +16,23 @@ export default component$(() => {
     }
   });
 
+  const flip = $(() => {
+    isFront.value = !isFront.value;
+  })
+
   return (
     <>
-      <img
-        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId.value}.png`}
-        alt="pokemon"
-        height={200}
-        width={200}
-      />
-      <div class="mt-2 flex items-center">
-        <button class="btn btn-primary mr-2" onClick$={prevId}>
+      <PokemonImage pokemonId={pokemonId.value} isFront={isFront.value}/>
+
+      <div class="mt-2 flex items-center gap-2">
+        <button class="btn btn-primary" onClick$={prevId}>
           <span>Anterior</span>
         </button>
         <button class="btn btn-primary" onClick$={nextId}>
           <span>Siguiente</span>
+        </button>
+        <button class="btn btn-primary" onClick$={flip}>
+          <span>Voltear</span>
         </button>
       </div>
     </>
