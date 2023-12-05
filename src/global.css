@@ -91,7 +91,7 @@ body {
   @apply font-bold py-2 px-4 rounded;
 }
 .btn-primary {
-  @apply bg-purple-600;  
+  @apply bg-purple-600 text-white;  
 }
 .btn-primary:hover {
   @apply bg-purple-700 transition-colors duration-300 ease-in-out; 

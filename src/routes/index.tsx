@@ -1,11 +1,11 @@
 import { component$, useSignal, $ } from "@builder.io/qwik";
-import type { DocumentHead } from "@builder.io/qwik-city";
+import { useNavigate, type DocumentHead } from "@builder.io/qwik-city";
 import PokemonImage from "~/components/pokemons/pokemon-image";
 
 export default component$(() => {
   const pokemonId = useSignal<number>(1); // Utilizar el hook useSignal solo para tipos primitivos
   const isFront = useSignal<boolean>(true);
-
+  const nav = useNavigate();
   const nextId = $(() => {
     pokemonId.value = pokemonId.value + 1;
   });
@@ -18,11 +18,17 @@ export default component$(() => {
 
   const flip = $(() => {
     isFront.value = !isFront.value;
-  })
+  });
+
+  const goToPokemon = $(() => {
+    nav(`/pokemon/${pokemonId.value}`);
+  });
 
   return (
     <>
-      <PokemonImage pokemonId={pokemonId.value} isFront={isFront.value}/>
+      <div class="cursor-pointer" onClick$={goToPokemon}>
+        <PokemonImage pokemonId={pokemonId.value} isFront={isFront.value} />
+      </div>
 
       <div class="mt-2 flex items-center gap-2">
         <button class="btn btn-primary" onClick$={prevId}>
